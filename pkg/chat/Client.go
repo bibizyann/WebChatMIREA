@@ -3,6 +3,7 @@ package chat
 import (
 	"github.com/gorilla/websocket"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -16,13 +17,11 @@ const (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	/*
-		CheckOrigin: func(r *http.Request) bool {
-			return true
-			},
-		allow connections from any origin — but, in production, this should be restricted for security reasons
-	*/
-} //I don`t remained ideas to use it as it should be
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+	// allow connections from any origin — but, in production, this should be restricted for security reasons
+}
 
 type Client struct {
 	Conn     *websocket.Conn

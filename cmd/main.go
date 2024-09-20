@@ -21,6 +21,7 @@ func main() {
 	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
 	router.POST("/ws/createRoom", wsHandler.CreateRoom)
 	router.GET("/ws/joinRoom/:roomId", wsHandler.JoinRoom)
+	router.GET("/ws/getClients/:roomId", wsHandler.GetClients)
 
 	err := router.Run()
 	if err != nil {

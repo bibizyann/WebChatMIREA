@@ -44,7 +44,7 @@ func (c *Client) readMessage(hub *Hub) {
 		if err != nil {
 			return
 		}
-		hub.unregister <- c
+		hub.Unregister <- c
 	}()
 
 	c.Conn.SetReadLimit(maxMessageSize)
@@ -72,7 +72,7 @@ func (c *Client) readMessage(hub *Hub) {
 			Content:  string(m),
 			Username: c.Username,
 		}
-		hub.broadcast <- message
+		hub.Broadcast <- message
 	}
 }
 

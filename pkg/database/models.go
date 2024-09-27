@@ -32,10 +32,10 @@ type Messages struct {
 }
 
 type Chats struct {
-	Id        int
+	Id        int `gorm:"primaryKey;autoIncrement"`
 	Name      string
-	IsGroup   bool
-	CreatedAt time.Time
+	IsGroup   bool      `gorm:"default:false"`
+	CreatedAt time.Time `gorm:"autoCreateTime"`
 }
 
 type ChatMembers struct {

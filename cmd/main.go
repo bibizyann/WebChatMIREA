@@ -18,8 +18,9 @@ func main() {
 
 	router.POST("/signup", handlers.SignUp)
 	router.POST("/login", handlers.Login)
-	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
 	router.POST("/ws/createRoom", wsHandler.CreateRoom)
+
+	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
 	router.GET("/ws/joinRoom/:roomId", wsHandler.JoinRoom)
 
 	err := router.Run()

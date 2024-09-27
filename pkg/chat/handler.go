@@ -1,8 +1,11 @@
 package chat
 
 import (
+	"WebChatMIREA/pkg/database"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"time"
 )
 
 type HubHandler struct {
@@ -16,8 +19,9 @@ func NewHandler(h *Hub) *HubHandler {
 }
 
 type CreateRoomReq struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	IsGroup bool   `json:"group"`
 }
 
 func (h *HubHandler) CreateRoom(c *gin.Context) {
@@ -33,6 +37,14 @@ func (h *HubHandler) CreateRoom(c *gin.Context) {
 		Clients: make(map[string]*Client),
 	}
 	h.hub.mu.Unlock()
+
+	chat := database.Chats{Name: req.Name, CreatedAt: time.Now(), IsGroup: req.IsGroup}
+	if err := database.DB.Create(&chat).Error; err != nil {
+		log.Println("error creating chat:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to create room"})
+		return
+	}
+
 	c.JSON(http.StatusOK, req)
 }
 

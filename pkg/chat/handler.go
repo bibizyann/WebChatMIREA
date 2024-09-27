@@ -26,13 +26,13 @@ func (h *HubHandler) CreateRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	h.hub.mu.Lock()
 	h.hub.Rooms[req.ID] = &Room{
 		ID:      req.ID,
 		Name:    req.Name,
 		Clients: make(map[string]*Client),
 	}
-
+	h.hub.mu.Unlock()
 	c.JSON(http.StatusOK, req)
 }
 
@@ -60,9 +60,37 @@ func (h *HubHandler) JoinRoom(c *gin.Context) {
 		Username: username,
 	}
 
-	h.hub.register <- client
-	h.hub.broadcast <- message
+	h.hub.Register <- client
+	h.hub.Broadcast <- message
 
 	go client.writeMessage()
 	client.readMessage(h.hub)
+}
+
+type ClientRes struct {
+	ID       string `json:"id"`
+	Username string `json:"username"`
+}
+
+func (h *HubHandler) GetClients(c *gin.Context) {
+	var clients []ClientRes
+	roomId := c.Param("roomId")
+
+	h.hub.mu.RLock()
+	if room, ok := h.hub.Rooms[roomId]; !ok {
+		clients = make([]ClientRes, 0)
+		c.JSON(http.StatusOK, clients)
+	} else {
+		room.mu.RLock()
+		for _, c := range room.Clients {
+			clients = append(clients, ClientRes{
+				ID:       c.ID,
+				Username: c.Username,
+			})
+		}
+		room.mu.RUnlock()
+
+		c.JSON(http.StatusOK, clients)
+	}
+	h.hub.mu.RUnlock()
 }

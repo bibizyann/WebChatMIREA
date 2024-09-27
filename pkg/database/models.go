@@ -32,7 +32,7 @@ type Messages struct {
 }
 
 type Chats struct {
-	Id        int
+	Id        int `gorm:"primaryKey;autoIncrement"`
 	Name      string
 	IsGroup   bool
 	CreatedAt time.Time

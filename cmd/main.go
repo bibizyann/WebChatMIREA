@@ -18,11 +18,11 @@ func main() {
 
 	router.POST("/signup", handlers.SignUp)
 	router.POST("/login", handlers.Login)
-	router.POST("/ws/createRoom", wsHandler.CreateRoom)
+	router.POST("/ws/createChat", wsHandler.CreateChat)
 
 	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
-	router.GET("/ws/joinRoom/:roomId", wsHandler.JoinRoom)
-	router.GET("/ws/getClients/:roomId", wsHandler.GetClients)
+	router.GET("/ws/joinChat/:chatId", wsHandler.JoinChat)
+	router.GET("/ws/getClients/:chatId", wsHandler.GetClients)
 
 	err := router.Run()
 	if err != nil {

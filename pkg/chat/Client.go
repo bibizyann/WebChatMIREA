@@ -26,7 +26,7 @@ var upgrader = websocket.Upgrader{
 type Client struct {
 	Conn     *websocket.Conn
 	ID       string `json:"id"`
-	RoomID   string `json:"roomID"`
+	ChatID   string `json:"chatID"`
 	Username string `json:"username"`
 	Message  chan *Message
 }
@@ -35,7 +35,7 @@ type Message struct {
 	Content      string `json:"content"`
 	Username     string `json:"username"`
 	CreationTime string `json:"creationTime"`
-	RoomID       string `json:"roomID"`
+	ChatID       string `json:"chatID"`
 }
 
 func (c *Client) readMessage(hub *Hub) {

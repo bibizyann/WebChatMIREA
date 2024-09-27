@@ -18,20 +18,20 @@ func NewHandler(h *Hub) *HubHandler {
 	}
 }
 
-type CreateRoomReq struct {
+type CreateChatReq struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
 	IsGroup bool   `json:"group"`
 }
 
-func (h *HubHandler) CreateRoom(c *gin.Context) {
-	var req CreateRoomReq
+func (h *HubHandler) CreateChat(c *gin.Context) {
+	var req CreateChatReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	h.hub.mu.Lock()
-	h.hub.Rooms[req.ID] = &Room{
+	h.hub.Chats[req.ID] = &Chat{
 		ID:      req.ID,
 		Name:    req.Name,
 		Clients: make(map[string]*Client),
@@ -48,13 +48,13 @@ func (h *HubHandler) CreateRoom(c *gin.Context) {
 	c.JSON(http.StatusOK, req)
 }
 
-func (h *HubHandler) JoinRoom(c *gin.Context) {
+func (h *HubHandler) JoinChat(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	roomID := c.Param("roomId")
+	chatID := c.Param("chatId")
 	clientID := c.Query("userId")
 	username := c.Query("username")
 
@@ -62,14 +62,15 @@ func (h *HubHandler) JoinRoom(c *gin.Context) {
 		Conn:     conn,
 		Message:  make(chan *Message, 10),
 		ID:       clientID,
-		RoomID:   roomID,
+		ChatID:   chatID,
 		Username: username,
 	}
 
 	message := &Message{
-		Content:  "A new user has joined the room",
-		RoomID:   roomID,
-		Username: username,
+		Content:      "A new user has joined the room",
+		ChatID:       chatID,
+		Username:     username,
+		CreationTime: time.Now().String(),
 	}
 
 	h.hub.Register <- client
@@ -86,21 +87,21 @@ type ClientRes struct {
 
 func (h *HubHandler) GetClients(c *gin.Context) {
 	var clients []ClientRes
-	roomId := c.Param("roomId")
+	chatId := c.Param("chatId")
 
 	h.hub.mu.RLock()
-	if room, ok := h.hub.Rooms[roomId]; !ok {
+	if chat, ok := h.hub.Chats[chatId]; !ok {
 		clients = make([]ClientRes, 0)
 		c.JSON(http.StatusOK, clients)
 	} else {
-		room.mu.RLock()
-		for _, c := range room.Clients {
+		chat.mu.RLock()
+		for _, c := range chat.Clients {
 			clients = append(clients, ClientRes{
 				ID:       c.ID,
 				Username: c.Username,
 			})
 		}
-		room.mu.RUnlock()
+		chat.mu.RUnlock()
 
 		c.JSON(http.StatusOK, clients)
 	}

@@ -76,8 +76,8 @@ func (h *HubHandler) JoinChat(c *gin.Context) {
 	h.hub.Register <- client
 	h.hub.Broadcast <- message
 
-	go client.writeMessage()
-	client.readMessage(h.hub)
+	go client.WriteMessage()
+	client.ReadMessage(h.hub)
 }
 
 type ClientRes struct {

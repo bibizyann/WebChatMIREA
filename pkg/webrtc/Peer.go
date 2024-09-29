@@ -19,6 +19,29 @@ type WebRTCManager struct {
 	audioCodec *webrtc.RTPCodecType
 }
 
+type Storage struct {
+	Rooms   map[string]*Room
+	Streams map[string]*Room
+	mu      sync.RWMutex
+}
+
+func NewStorage() *Storage {
+	return &Storage{
+		Rooms:   make(map[string]*Room),
+		Streams: make(map[string]*Room),
+	}
+}
+
+type StorageHandler struct {
+	storage *Storage
+}
+
+func NewStorageHandler(s *Storage) *StorageHandler {
+	return &StorageHandler{
+		storage: s,
+	}
+}
+
 type Room struct {
 	Peers *Peers
 	ID    string `json:"id"`

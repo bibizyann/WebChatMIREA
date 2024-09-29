@@ -38,7 +38,7 @@ type Message struct {
 	ChatID       string `json:"chatID"`
 }
 
-func (c *Client) readMessage(hub *Hub) {
+func (c *Client) ReadMessage(hub *Hub) {
 	defer func() {
 		err := c.Conn.Close()
 		if err != nil {
@@ -76,7 +76,7 @@ func (c *Client) readMessage(hub *Hub) {
 	}
 }
 
-func (c *Client) writeMessage() {
+func (c *Client) WriteMessage() {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()

@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -44,8 +45,18 @@ func main() {
 	router.GET("/room/:uuid/websocket", storageHandler.RoomHandler)
 	router.GET("/room/:uuid/chat/websocket", storageHandler.RoomChatWebsocket)
 
+	go dispatchKeyFrames(storage)
+
 	err = router.Run()
 	if err != nil {
 		log.Fatal("failed to start server")
+	}
+}
+
+func dispatchKeyFrames(s *webrtc.Storage) {
+	for range time.NewTicker(time.Second * 3).C {
+		for _, room := range s.Rooms {
+			room.Peers.DispatchKeyFrame()
+		}
 	}
 }

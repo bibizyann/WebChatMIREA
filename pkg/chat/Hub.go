@@ -2,7 +2,7 @@ package chat
 
 import "sync"
 
-type Room struct {
+type Chat struct {
 	mu      sync.RWMutex
 	ID      string             `json:"id"`
 	Name    string             `json:"name"`
@@ -11,7 +11,7 @@ type Room struct {
 
 type Hub struct {
 	mu         sync.RWMutex
-	Rooms      map[string]*Room
+	Chats      map[string]*Chat
 	Broadcast  chan *Message
 	Register   chan *Client
 	Unregister chan *Client
@@ -22,7 +22,7 @@ func NewHub() *Hub {
 		Broadcast:  make(chan *Message, 5),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
-		Rooms:      make(map[string]*Room),
+		Chats:      make(map[string]*Chat),
 	}
 }
 
@@ -31,7 +31,7 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.Register:
 			h.mu.Lock()
-			if r, ok := h.Rooms[client.RoomID]; ok {
+			if r, ok := h.Chats[client.ChatID]; ok {
 				r.mu.Lock()
 				if _, ok := r.Clients[client.ID]; !ok {
 					r.Clients[client.ID] = client
@@ -41,7 +41,7 @@ func (h *Hub) Run() {
 			h.mu.Unlock()
 		case client := <-h.Unregister:
 			h.mu.Lock()
-			if r, ok := h.Rooms[client.RoomID]; ok {
+			if r, ok := h.Chats[client.ChatID]; ok {
 				r.mu.Lock()
 				if _, ok := r.Clients[client.ID]; ok {
 					if r.Clients != nil {
@@ -57,11 +57,11 @@ func (h *Hub) Run() {
 			}
 			h.mu.Unlock()
 		case message := <-h.Broadcast:
-			if r, ok := h.Rooms[message.RoomID]; ok {
-				go func(message *Message, room *Room) {
-					room.mu.RLock()
-					defer room.mu.RUnlock()
-					for _, client := range room.Clients {
+			if r, ok := h.Chats[message.ChatID]; ok {
+				go func(message *Message, chat *Chat) {
+					chat.mu.RLock()
+					defer chat.mu.RUnlock()
+					for _, client := range chat.Clients {
 						select {
 						case client.Message <- message:
 						default:

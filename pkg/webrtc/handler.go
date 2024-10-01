@@ -249,3 +249,5 @@ func (s *StorageHandler) RoomChatWebsocket(c *gin.Context) {
 	}
 	PeerChatConn(c, room.Hub)
 }
+
+//TODO: fix: some problems with handlers; add: some basic html's

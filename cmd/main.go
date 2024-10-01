@@ -16,6 +16,7 @@ import (
 func main() {
 	database.Init()
 	router := gin.Default()
+	router.Use(middleware.CORSMiddleware())
 	hub := chat.NewHub()
 	wsHandler := chat.NewHandler(hub)
 	storage := webrtc.NewStorage()

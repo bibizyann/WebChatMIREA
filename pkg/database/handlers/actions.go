@@ -13,7 +13,7 @@ func SignUp(c *gin.Context) {
 	var body struct {
 		Email    string
 		Password string
-	}
+	} //TODO: add: username (nil username unique field in bd - not good)
 
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse body"})

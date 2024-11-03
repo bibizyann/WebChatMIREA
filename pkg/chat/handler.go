@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -45,7 +46,7 @@ func (h *HubHandler) CreateChat(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, req)
+	c.JSON(http.StatusCreated, req)
 }
 
 func (h *HubHandler) JoinChat(c *gin.Context) {
@@ -65,6 +66,14 @@ func (h *HubHandler) JoinChat(c *gin.Context) {
 		ChatID:   chatID,
 		Username: username,
 	}
+
+	id, _ := strconv.Atoi(client.ChatID)
+	member := database.ChatMembers{Id: id, Name: client.Username, CreatedAt: time.Now()}
+	if err := database.DB.Create(&member).Error; err != nil {
+		log.Println("error creating chat member:", err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add chat member"})
+	}
+	c.JSON(http.StatusAccepted, nil)
 
 	message := &Message{
 		Content:      "A new user has joined the room",

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	maxMessageSize = 512
+	maxMessageSize = 2048
 	writeTime      = 10 * time.Second
 	pongWait       = 60 * time.Second
 	pingPeriod     = 60 * time.Second
@@ -69,8 +69,9 @@ func (c *Client) ReadMessage(hub *Hub) {
 			break
 		}
 		message := &Message{
-			Content:  string(m),
-			Username: c.Username,
+			Content:      string(m),
+			Username:     c.Username,
+			CreationTime: time.Now().String(),
 		}
 		hub.Broadcast <- message
 	}

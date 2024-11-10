@@ -13,7 +13,8 @@ func SignUp(c *gin.Context) {
 	var body struct {
 		Email    string
 		Password string
-	} //TODO: add: username (nil username unique field in bd - not good)
+		Username string
+	}
 
 	if c.Bind(&body) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse body"})
@@ -25,8 +26,7 @@ func SignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to hash password"})
 		return
 	}
-
-	user := database.Users{Email: body.Email, PasswordHash: string(hash)}
+	user := database.Users{Email: body.Email, PasswordHash: string(hash), Username: body.Username}
 	result := database.DB.Create(&user)
 
 	if result.Error != nil {
@@ -94,4 +94,9 @@ func Validate(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": user,
 	})
+}
+
+func Logout(c *gin.Context) {
+	c.SetCookie("Authorization", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }

@@ -23,7 +23,7 @@ func main() {
 	storageHandler := webrtc.NewStorageHandler(storage)
 	go hub.Run()
 	// Read index.html from disk into memory, serve whenever anyone requests /
-	indexHTML, err := os.ReadFile("C:/Users/User/GolandProjects/WebChatMIREA/pkg/webrtc/index.html")
+	indexHTML, err := os.ReadFile("../WebChatMIREA/pkg/webrtc/index.html")
 	if err != nil {
 		panic(err)
 	}
@@ -32,6 +32,7 @@ func main() {
 	router.POST("/signup", handlers.SignUp)
 	router.POST("/login", handlers.Login)
 	router.POST("/ws/createChat", wsHandler.CreateChat)
+	router.POST("/logout", handlers.Logout)
 
 	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
 	router.GET("/ws/joinChat/:chatId", wsHandler.JoinChat)

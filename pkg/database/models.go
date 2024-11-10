@@ -39,9 +39,10 @@ type Chats struct {
 }
 
 type ChatMembers struct {
-	Id        int
+	ChatID    int
+	UserID    int
 	Name      string
-	IsGroup   bool
+	JoinedAt  time.Time
 	CreatedAt time.Time
 }
 

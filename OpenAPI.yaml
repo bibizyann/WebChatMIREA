@@ -11,6 +11,8 @@ tags:
     description: Operations about user
   - name: chat
     description: Operations with chats
+  - name: webrtc
+    description: Operations with rooms (video-conf)
 paths:
   /login:
     post:
@@ -147,6 +149,48 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Client'
+  /room/create:
+    get:
+      tags:
+        - webrtc
+      summary: Creating room with some uuid and redirect in it
+      description: ''
+      operationId: CreateRoom
+      responses:
+        '301':
+          description: redirected in room
+  /room/{uuid}/websocket:
+    get:
+      tags:
+        - webrtc
+      summary: Connecting to the room with uuid
+      description: 'This endpoint implements websocket connection and sending of messages related to SignalPeerConnections: candidate, answer'
+      operationId: ConnectToTheRoom
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '101':
+          description: Switching Protocols - The client is switching protocols as requested by the server.
+  /room/:uuid/chat/websocket:
+    get:
+      tags:
+        - webrtc
+      summary: Connect to room chat
+      description: ''
+      operationId: RoomChatConnect
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '101':
+          description: Switching Protocols - The client is switching protocols as requested by the server.
 
 components:
   schemas:

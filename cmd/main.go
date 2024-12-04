@@ -33,6 +33,7 @@ func main() {
 	router.POST("/login", handlers.Login)
 	router.POST("/ws/createChat", wsHandler.CreateChat)
 	router.POST("/logout", handlers.Logout)
+	router.POST("/passrcv", handlers.PasswordRecoveryPost)
 
 	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
 	router.GET("/ws/joinChat/:chatId", wsHandler.JoinChat)

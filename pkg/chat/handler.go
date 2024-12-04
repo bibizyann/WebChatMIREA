@@ -116,5 +116,3 @@ func (h *HubHandler) GetClients(c *gin.Context) {
 	}
 	h.hub.mu.RUnlock()
 }
-
-//TODO: add in bd chat members

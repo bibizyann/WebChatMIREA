@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -73,6 +74,14 @@ func (h *HubHandler) JoinChat(c *gin.Context) {
 		CreationTime: time.Now().String(),
 	}
 
+	UserId, err := strconv.Atoi(clientID)
+	ChatId, err := strconv.Atoi(chatID)
+	user := database.ChatMembers{ChatID: ChatId, UserID: UserId, Name: username, JoinedAt: time.Now()}
+	result := database.DB.Create(&user)
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to create user"})
+		return
+	}
 	h.hub.Register <- client
 	h.hub.Broadcast <- message
 
@@ -107,5 +116,3 @@ func (h *HubHandler) GetClients(c *gin.Context) {
 	}
 	h.hub.mu.RUnlock()
 }
-
-//TODO: add in bd chat members

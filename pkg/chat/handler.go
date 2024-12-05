@@ -67,14 +67,6 @@ func (h *HubHandler) JoinChat(c *gin.Context) {
 		Username: username,
 	}
 
-	id, _ := strconv.Atoi(client.ChatID)
-	member := database.ChatMembers{Id: id, Name: client.Username, CreatedAt: time.Now()}
-	if err := database.DB.Create(&member).Error; err != nil {
-		log.Println("error creating chat member:", err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to add chat member"})
-	}
-	c.JSON(http.StatusAccepted, nil)
-
 	message := &Message{
 		Content:      "A new user has joined the room",
 		ChatID:       chatID,

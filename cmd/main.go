@@ -34,6 +34,7 @@ func main() {
 	router.POST("/ws/createChat", wsHandler.CreateChat)
 	router.POST("/logout", handlers.Logout)
 	router.POST("/passrcv", handlers.PasswordRecoveryPost)
+	router.POST("/avatar", handlers.UpdateUserData)
 
 	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
 	router.GET("/ws/joinChat/:chatId", wsHandler.JoinChat)

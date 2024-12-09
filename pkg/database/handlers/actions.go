@@ -221,3 +221,20 @@ func PasswordRecoveryPost(c *gin.Context) {
 	}
 
 }
+
+func UpdateUserData(c *gin.Context) {
+	var body struct {
+		Email     string
+		AvatarUrl string
+	}
+
+	if c.Bind(&body) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to parse body"})
+		return
+	}
+	user, _ := GetUserByEmail(c, body.Email)
+	user.AvatarUrl = body.AvatarUrl
+	database.DB.Save(&user)
+	c.JSON(http.StatusOK, gin.H{})
+
+}

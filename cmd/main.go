@@ -34,7 +34,7 @@ func main() {
 			Name:     "TestCookie",
 			Value:    "TestValue",
 			Path:     "/",
-			Domain:   "webchatfront-6xch.vercel.app",
+			Domain:   ".onrender.com",
 			Expires:  time.Now().Add(24 * time.Hour),
 			Secure:   true,
 			HttpOnly: true,

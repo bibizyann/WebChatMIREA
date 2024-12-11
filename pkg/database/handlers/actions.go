@@ -51,10 +51,21 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	// send it back
-	c.SetSameSite(http.SameSiteNoneMode)
-	// secure = True при деплое
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "/", "webchatfront-6xch.vercel.app", true, true)
+	cookie := &http.Cookie{
+		Name:     "Authorization",
+		Value:    tokenString,
+		Path:     "/",                                 // Куки будут доступны на всем сайте
+		Domain:   "webchatfront-6xch.vercel.app",      // Домен вашего фронтенда
+		Expires:  time.Now().Add(30 * 24 * time.Hour), // Время жизни куки (30 дней)
+		Secure:   true,                                // Обязательно для HTTPS
+		HttpOnly: true,                                // Для безопасности (защита от XSS)
+		SameSite: http.SameSiteNoneMode,               // Кросс-доменная работа
+	}
+
+	// Установка куки
+	http.SetCookie(c.Writer, cookie)
+
+	// ответ
 	c.JSON(http.StatusOK, gin.H{})
 }
 
@@ -100,10 +111,21 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// send it back
-	c.SetSameSite(http.SameSiteNoneMode)
-	// secure = True при деплое
-	c.SetCookie("Authorization", tokenString, 3600*24*30, "/", "webchatfront-6xch.vercel.app", true, true)
+	cookie := &http.Cookie{
+		Name:     "Authorization",
+		Value:    tokenString,
+		Path:     "/",                                 // Куки будут доступны на всем сайте
+		Domain:   "webchatfront-6xch.vercel.app",      // Домен вашего фронтенда
+		Expires:  time.Now().Add(30 * 24 * time.Hour), // Время жизни куки (30 дней)
+		Secure:   true,                                // Обязательно для HTTPS
+		HttpOnly: true,                                // Для безопасности (защита от XSS)
+		SameSite: http.SameSiteNoneMode,               // Кросс-доменная работа
+	}
+
+	// Установка куки
+	http.SetCookie(c.Writer, cookie)
+
+	// ответ
 	c.JSON(http.StatusOK, gin.H{})
 }
 
@@ -118,8 +140,25 @@ func Validate(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	c.SetCookie("Authorization", "", -1, "/", "webchatfront-6xch.vercel.app", true, true)
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
+	cookie := &http.Cookie{
+		Name:     "Authorization",
+		Value:    "",
+		Path:     "/",                            // Должно совпадать с путём, где кука была установлена
+		Domain:   "webchatfront-6xch.vercel.app", // Должен совпадать с доменом, где кука была установлена
+		Expires:  time.Unix(0, 0),                // Устанавливаем время в прошлое
+		MaxAge:   -1,                             // Немедленно истекает
+		Secure:   true,                           // Совпадает с настройкой Secure при установке
+		HttpOnly: true,                           // Совпадает с настройкой HttpOnly при установке
+		SameSite: http.SameSiteNoneMode,          // Совпадает с настройкой SameSite при установке
+	}
+
+	// Устанавливаем куку с нулевым сроком действия
+	http.SetCookie(c.Writer, cookie)
+
+	// Отправляем успешный ответ
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully logged out",
+	})
 }
 
 func SendEmail(c *gin.Context, email string, password string) error {

@@ -46,7 +46,7 @@ func (h *HubHandler) CreateChat(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, req)
+	c.JSON(http.StatusCreated, req)
 }
 
 func (h *HubHandler) JoinChat(c *gin.Context) {

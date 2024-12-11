@@ -1,0 +1,246 @@
+openapi: 3.1.0
+info:
+  title: WebChatMIREA
+  description: |-
+    This is a draft API version of WebChat based on the OpenAPI 3.1
+  version: 0.0.1
+servers:
+  - url: 'http/localhost:8080/'
+tags:
+  - name: user
+    description: Operations about user
+  - name: chat
+    description: Operations with chats
+  - name: webrtc
+    description: Operations with rooms (video-conf)
+paths:
+  /login:
+    post:
+      tags:
+        - user
+      summary: Log in to the system
+      description: This can only be done by an existing user
+      operationId: loginUser
+      requestBody:
+        description: Login user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid email or password
+  /logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: [ ]
+      responses:
+        default:
+          description: successful operation
+  /validate:
+    get:
+      tags:
+        - user
+      summary: Validate user
+      description: ''
+      operationId: ValidateUser
+      parameters:
+        - name: user
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+  /ws/createChat:
+    post:
+      tags:
+        - chat
+      summary: Create chat
+      description: ''
+      operationId: CreateChat
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: 1
+                name:
+                  type: string
+                  example: test-chat
+                group:
+                  type: boolean
+                  example: true
+      responses:
+        '201':
+          description: Chat has been created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chat'
+        '400':
+          description: Failed to create room
+
+  /ws/joinChat/{chatId}:
+    get:
+      tags:
+        - chat
+      summary: join the chat by id
+      description: Connect to the WebSocket server. Send a message and receive a response.
+      operationId: JoinByChatId
+      parameters:
+          - name: chatId
+            in: path
+            description: 'The id that needs to be fetched.'
+            required: true
+            schema:
+              type: string
+          - name: userId
+            in: query
+            description: ''
+            required: true
+            schema:
+              type: string
+          - name: username
+            in: query
+            description: ''
+            required: true
+            schema:
+              type: string
+
+      responses:
+        '101':
+          description: Switching Protocols - The client is switching protocols as requested by the server.
+        '400':
+          description: Failed to add chat member
+
+  /ws/getClients/{chatId}:
+    get:
+      tags:
+        - chat
+      summary: get the chat clients by chat id
+      description: ''
+      operationId: GetClientsByChatId
+      parameters:
+        - name: chatId
+          in: path
+          description: 'The id that needs to be fetched.'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
+  /room/create:
+    get:
+      tags:
+        - webrtc
+      summary: Creating room with some uuid and redirect in it
+      description: ''
+      operationId: CreateRoom
+      responses:
+        '301':
+          description: redirected in room
+  /room/{uuid}/websocket:
+    get:
+      tags:
+        - webrtc
+      summary: Connecting to the room with uuid
+      description: 'This endpoint implements websocket connection and sending of messages related to SignalPeerConnections: candidate, answer'
+      operationId: ConnectToTheRoom
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '101':
+          description: Switching Protocols - The client is switching protocols as requested by the server.
+  /room/:uuid/chat/websocket:
+    get:
+      tags:
+        - webrtc
+      summary: Connect to room chat
+      description: ''
+      operationId: RoomChatConnect
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '101':
+          description: Switching Protocols - The client is switching protocols as requested by the server.
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+    Chat:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        name:
+          type: string
+          example: test-chat
+        clients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Client'
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 1
+        chatID:
+          type: string
+          example: 1
+        username:
+          type: string
+          example: john
+    Message:
+      type: object
+      properties:
+        content:
+          type: string
+          example: something
+        username:
+          type: string
+          description: who send this message
+          example: hi
+        creationTime:
+          type: string
+          example: 2006-01-02 15:04:05.999999999 -0700 MST
+        chatID:
+          type: string
+          example: 1

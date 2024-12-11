@@ -55,7 +55,7 @@ func SignUp(c *gin.Context) {
 		Name:     "Authorization",
 		Value:    tokenString,
 		Path:     "/",                                 // Куки будут доступны на всем сайте
-		Domain:   "webchatfront-6xch.vercel.app",      // Домен вашего фронтенда
+		Domain:   ".onrender.com",                     // Домен вашего фронтенда
 		Expires:  time.Now().Add(30 * 24 * time.Hour), // Время жизни куки (30 дней)
 		Secure:   true,                                // Обязательно для HTTPS
 		HttpOnly: true,                                // Для безопасности (защита от XSS)
@@ -115,7 +115,7 @@ func Login(c *gin.Context) {
 		Name:     "Authorization",
 		Value:    tokenString,
 		Path:     "/",                                 // Куки будут доступны на всем сайте
-		Domain:   "webchatfront-6xch.vercel.app",      // Домен вашего фронтенда
+		Domain:   ".onrender.com",                     // Домен вашего фронтенда
 		Expires:  time.Now().Add(30 * 24 * time.Hour), // Время жизни куки (30 дней)
 		Secure:   true,                                // Обязательно для HTTPS
 		HttpOnly: true,                                // Для безопасности (защита от XSS)
@@ -143,13 +143,13 @@ func Logout(c *gin.Context) {
 	cookie := &http.Cookie{
 		Name:     "Authorization",
 		Value:    "",
-		Path:     "/",                            // Должно совпадать с путём, где кука была установлена
-		Domain:   "webchatfront-6xch.vercel.app", // Должен совпадать с доменом, где кука была установлена
-		Expires:  time.Unix(0, 0),                // Устанавливаем время в прошлое
-		MaxAge:   -1,                             // Немедленно истекает
-		Secure:   true,                           // Совпадает с настройкой Secure при установке
-		HttpOnly: true,                           // Совпадает с настройкой HttpOnly при установке
-		SameSite: http.SameSiteNoneMode,          // Совпадает с настройкой SameSite при установке
+		Path:     "/",                   // Должно совпадать с путём, где кука была установлена
+		Domain:   ".onrender.com",       // Должен совпадать с доменом, где кука была установлена
+		Expires:  time.Unix(0, 0),       // Устанавливаем время в прошлое
+		MaxAge:   -1,                    // Немедленно истекает
+		Secure:   true,                  // Совпадает с настройкой Secure при установке
+		HttpOnly: true,                  // Совпадает с настройкой HttpOnly при установке
+		SameSite: http.SameSiteNoneMode, // Совпадает с настройкой SameSite при установке
 	}
 
 	// Устанавливаем куку с нулевым сроком действия

@@ -8,6 +8,7 @@ import (
 	"WebChatMIREA/pkg/webrtc"
 	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -27,6 +28,20 @@ func main() {
 	router.POST("/logout", handlers.Logout)
 	router.POST("/passrcv", handlers.PasswordRecoveryPost)
 	router.POST("/avatar", handlers.UpdateUserData)
+
+	router.GET("/test-cookie", func(c *gin.Context) {
+		http.SetCookie(c.Writer, &http.Cookie{
+			Name:     "TestCookie",
+			Value:    "TestValue",
+			Path:     "/",
+			Domain:   "webchatfront-6xch.vercel.app",
+			Expires:  time.Now().Add(24 * time.Hour),
+			Secure:   true,
+			HttpOnly: true,
+			SameSite: http.SameSiteNoneMode,
+		})
+		c.JSON(http.StatusOK, gin.H{"message": "Cookie set!"})
+	})
 
 	router.GET("/validate", middleware.RequireAuth, handlers.Validate)
 	router.GET("/ws/joinChat/:chatId", wsHandler.JoinChat)

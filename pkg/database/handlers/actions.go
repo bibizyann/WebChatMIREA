@@ -52,7 +52,7 @@ func SignUp(c *gin.Context) {
 	}
 
 	// send it back
-	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetSameSite(http.SameSiteNoneMode)
 	// secure = True при деплое
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", true, true)
 	c.JSON(http.StatusOK, gin.H{})
@@ -101,7 +101,7 @@ func Login(c *gin.Context) {
 	}
 
 	// send it back
-	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetSameSite(http.SameSiteNoneMode)
 	// secure = True при деплое
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", true, true)
 	c.JSON(http.StatusOK, gin.H{})
